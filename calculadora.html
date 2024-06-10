@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Funciones</title>
+<style>
+    .calculator-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+    }
+    h2 {
+        text-align: center;
+    }
+    label {
+        display: block;
+        margin-bottom: 10px;
+    }
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    p {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    .calculator-section {
+        display: none;
+    }
+    .canvas-container {
+        display: block;
+        margin-top: 20px;
+        border: 1px solid black;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .canvas-container canvas {
+        display: block;
+        margin: 0 auto;
+    }
+</style>
+</head>
+<body>
+
+<div class="calculator-container">
+    <h2>Calculadora de Funciones</h2>
+
+    <label for="tipo">Seleccione el tipo de función:</label>
+    <select id="tipo" name="tipo">
+        <option value="racional">Función Racional</option>
+        <option value="irracional">Función Irracional</option>
+    </select>
+
+    <div id="racional" class="calculator-section">
+        <label for="numerador">Numerador:</label>
+        <input type="text" id="numerador" name="numerador" placeholder="Ejemplo: x+1">
+
+        <label for="denominador">Denominador:</label>
+        <input type="text" id="denominador" name="denominador" placeholder="Ejemplo: x-2">
+
+        <div class="canvas-container">
+            <canvas id="canvas-racional" width="400" height="400"></canvas>
+        </div>
+    </div>
+
+    <div id="irracional" class="calculator-section">
+        <label for="funcion">Ingrese la función (ejemplo: Math.sqrt(x)):</label>
+        <input type="text" id="funcion" name="funcion" placeholder="Ejemplo: Math.sqrt(x)">
+
+        <div class="canvas-container">
+            <canvas id="canvas-irracional" width="400" height="400"></canvas>
+        </div>
+    </div>
+
+    <button onclick="calcular()">Calcular</button>
+
+    <p id="resultado"></p>
+</div>
+
+<script>
+function calcular() {
+    var tipo = document.getElementById("tipo").value;
+
+    if (tipo === "racional") {
+        var numeradorInput = document.getElementById("numerador").value;
+        var denominadorInput = document.getElementById("denominador").value;
+
+        var numerador = new Function('x', 'return ' + numeradorInput);
+        var denominador = new Function('x', 'return ' + denominadorInput);
+
+        var dominio;
+        try {
+            dominio = encontrarDominio(denominador);
+        } catch (error) {
+            dominio = "Error: " + error.message;
+        }
+
+        var imagen;
+        if (dominio === "Error") {
+            imagen = "No se puede calcular la imagen debido a un error en el dominio.";
+        } else {
+            imagen = "La imagen es el conjunto de todos los valores que la función puede tomar para los valores del dominio proporcionados.";
+        }
+
+        document.getElementById("resultado").innerHTML = "Dominio: " + dominio + "<br>Imagen: " + imagen;
+
+        dibujarPlanoCartesiano(numerador, denominador, "canvas-racional");
+    } else if (tipo === "irracional") {
+        var funcionInput = document.getElementById("funcion").value;
+
+        var funcion = new Function('x', 'return ' + funcionInput);
+
+        var dominio;
+        try {
+            dominio = encontrarDominio(funcion);
+        } catch (error) {
+            dominio = "Error: " + error.message;
+        }
+
+        var imagen;
+        if (dominio === "Error") {
+            imagen = "No se puede calcular la imagen debido a un error en el dominio.";
+        } else {
+            imagen = "La imagen es el conjunto de todos los valores que la función puede tomar para los valores del dominio proporcionados.";
+        }
+
+        document.getElementById("resultado").innerHTML = "Dominio: " + dominio + "<br>Imagen: " + imagen;
+
+        dibujarPlanoCartesiano(funcion, null, "canvas-irracional");
+    }
+}
+
+function encontrarDominio(funcion) {
+    var x = 0;
+    var resultado = funcion(x);
+    if (isNaN(resultado) || !isFinite(resultado)) {
+        throw new Error("La función no está definida para algunos valores en el dominio.");
+    } else {
+        return "R";
+    }
+}
+
+function dibujarPlanoCartesiano(numerador, denominador, canvasId) {
+    var canvas = document.getElementById(canvasId);
+    var ctx = canvas.getContext("2d");
+    var width = canvas.width;
+    var height = canvas.height;
+
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.beginPath();
+    ctx.moveTo(0, height / 2);
+    ctx.lineTo(width, height / 2);
+    ctx.moveTo(width / 2, 0);
+    ctx.lineTo(width / 2, height);
+    ctx.strokeStyle = "#000";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = "red";
+
+    var func;
+    if (numerador && denominador) {
+        func = function(x) {
+            return numerador(x) / denominador(x);
+        };
+    } else {
+        func = numerador;
+    }
+
+    for (var i = -10; i <= 10; i += 0.1) {
+        var x = i;
+        var y = func(x);
+        if (isFinite(y)) {
+            ctx.lineTo(width / 2 + x * 20, height / 2 - y * 20);
+        } else {
+            ctx.stroke();
+            ctx.beginPath();
+        }
+    }
+    ctx.stroke();
+}
+
+document.getElementById("tipo").addEventListener("change", function() {
+    var tipo = this.value;
+    var racional = document.getElementById("racional");
+    var irracional = document.getElementById("irracional");
+    
+    if (tipo === "racional") {
+        racional.style.display = "block";
+        irracional.style.display = "none";
+    } else if (tipo === "irracional") {
+        racional.style.display = "none";
+        irracional.style.display = "block";
+    }
+});
+</script>
+
+</body>
+</html>

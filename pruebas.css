@@ -1,0 +1,118 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #0F0F0F;
+}
+
+.container {
+    max-width: 2000px;
+    margin: 0 auto;
+}
+
+.header {
+    background-image: url(prueba2.jpg);
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 40vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    z-index: 1000;
+    background-color: #040404;
+    border-bottom: 1px solid #FFFFFF29;
+}
+
+.logo {
+    color: #A70A15;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.menu .navbar ul li {
+    position: relative;
+    float: left;
+}
+
+.menu .navbar ul li a {
+    font-size: 18px;
+    padding: 20px;
+    color: #FFFFFF;
+    display: block;
+}
+
+.menu .navbar ul li a:hover {
+    color: #E1160D;
+}
+
+.nav>li {
+    float: left;
+}
+
+.nav li ul {
+    display: none;
+    position: absolute;
+    min-width: 140px;
+}
+
+#menu {
+    display: none;
+}
+
+.menu-icono {
+    width: 25px;
+}
+
+.menu label {
+    display: none;
+    cursor: pointer;
+}
+
+@media (max-width: 99px) {
+    .menu {
+        padding: 20px;
+    }
+
+    .menu label {
+        display: initial;
+    }
+
+    .menu .navbar {
+        position: absolute;
+        top: 100px;
+        left: 0;
+        right: 0;
+        background-color: #303030;
+        display: none;
+    }
+
+    .menu .navbar ul li {
+        width: 100px;
+    }
+
+    #menu:checked~.navbar {
+        display: initial;
+    }
+
+    .header-content {
+        padding: 3-px;
+    }
+}
+
+/* Estilos para centrar el contenido */
+.contenido {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
